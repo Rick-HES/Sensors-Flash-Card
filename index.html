@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Sensors Lightning Round (Generic Categories)</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#121a33;
+      --panel2:#0f1730;
+      --text:#eef1ff;
+      --muted:#c7cffc;
+      --border:rgba(255,255,255,.16);
+      --accent:#7aa2ff;
+      --good:#28e08b;
+      --warn:#ffc857;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(1200px 700px at 20% 0%, #16224a 0%, var(--bg) 60%);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .app{
+      width:min(980px, 100%);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius:18px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+      overflow:hidden;
+    }
+    header{
+      padding:18px 20px;
+      background: rgba(0,0,0,.18);
+      border-bottom:1px solid var(--border);
+      display:flex;
+      gap:14px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    header .title{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    header h1{
+      margin:0;
+      font-size:18px;
+      letter-spacing:.2px;
+      font-weight:700;
+    }
+    header .subtitle{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+    }
+    button{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      font-weight:650;
+      cursor:pointer;
+      transition: transform .05s ease, background .15s ease, border-color .15s ease;
+      user-select:none;
+    }
+    button:hover{ background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.22); }
+    button:active{ transform: translateY(1px); }
+    button.primary{
+      border-color: rgba(122,162,255,.45);
+      background: rgba(122,162,255,.18);
+    }
+    button.primary:hover{ background: rgba(122,162,255,.24); }
+    button.danger{
+      border-color: rgba(255,120,120,.35);
+      background: rgba(255,120,120,.12);
+    }
+    button.danger:hover{ background: rgba(255,120,120,.18); }
+
+    .main{
+      padding:20px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+    }
+
+    .statusbar{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background: rgba(0,0,0,.12);
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .dot{
+      width:8px;height:8px;border-radius:999px;background: var(--accent);
+      box-shadow: 0 0 0 3px rgba(122,162,255,.18);
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:18px;
+      min-height: 260px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      position:relative;
+    }
+    .card .label{
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+    }
+    .prompt{
+      font-size:28px;
+      line-height:1.25;
+      font-weight:800;
+      margin:0;
+    }
+    .hint{
+      margin-top:auto;
+      color:var(--muted);
+      font-size:13px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .hint .smallbtns{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+    }
+
+    .footer{
+      padding:14px 20px 20px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:space-between;
+      align-items:center;
+      border-top:1px solid var(--border);
+      background: rgba(0,0,0,.10);
+    }
+
+    .nav{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .progress{
+      flex: 1 1 240px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      justify-content:flex-end;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .bar{
+      width: min(340px, 100%);
+      height:10px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      overflow:hidden;
+      background: rgba(255,255,255,.05);
+    }
+    .fill{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(122,162,255,.8), rgba(40,224,139,.8));
+      transition: width .25s ease;
+    }
+
+    /* Answer key slide */
+    .keyWrap{
+      display:none;
+      gap:12px;
+      flex-direction:column;
+    }
+    .keyWrap.show{ display:flex; }
+    .keyTitle{
+      margin:0;
+      font-size:20px;
+      font-weight:800;
+    }
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.10);
+      font-size:14px;
+    }
+    th, td{
+      padding:10px 12px;
+      border-bottom:1px solid var(--border);
+      vertical-align:top;
+    }
+    th{
+      text-align:left;
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      background: rgba(255,255,255,.06);
+    }
+    tr:last-child td{ border-bottom:none; }
+    .tag{
+      display:inline-block;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      font-weight:700;
+      color:var(--text);
+      white-space:nowrap;
+    }
+
+    /* Small screens */
+    @media (max-width:520px){
+      .prompt{ font-size:22px; }
+      button{ padding:10px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="Sensors Lightning Round Game">
+    <header>
+      <div class="title">
+        <h1>Sensors Lightning Round</h1>
+        <p class="subtitle">Shuffle prompts • No answers shown during play • Answer key at the end</p>
+      </div>
+      <div class="controls">
+        <button id="btnShuffle" class="primary" title="Shuffle order (keeps Answer Key matched to prompt numbers)">Shuffle</button>
+        <button id="btnRestart" title="Restart to first card">Restart</button>
+        <button id="btnKey" class="danger" title="Go to Answer Key slide">Answer Key</button>
+      </div>
+    </header>
+
+    <div class="main">
+      <div class="statusbar">
+        <span class="pill"><span class="dot"></span><span id="modeLabel">Mode: Prompts</span></span>
+        <span class="pill" id="timerPill" style="display:none;">
+          <span>Timer:</span> <strong id="timerText">00:00</strong>
+        </span>
+      </div>
+
+      <!-- Prompt Slide -->
+      <section id="promptCard" class="card" aria-live="polite">
+        <div class="label" id="cardLabel">Prompt</div>
+        <h2 class="prompt" id="promptText">Loading…</h2>
+
+        <div class="hint">
+          <div>
+            <span style="opacity:.9;">Students answer with:</span>
+            <span class="tag" title="Generic sensor category only">Mechanoreceptors / Thermoreceptors / Chemoreceptors / Photoreceptors / Nociceptors / Immune sensors / Intracellular sensors</span>
+          </div>
+          <div class="smallbtns">
+            <button id="btnTimer" title="Start/stop a 5-minute study timer">5:00 Timer</button>
+            <button id="btnRevealBlank" title="Shows a blank answer slide for classroom display (still no key)">Blank Answer Slide</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Answer Key Slide -->
+      <section id="keyCard" class="card" style="display:none;">
+        <div class="label">Answer Key</div>
+        <div class="keyWrap" id="keyWrap">
+          <h2 class="keyTitle">All Prompts + Categories</h2>
+          <div style="color:var(--muted); font-size:13px;">
+            Tip: If you shuffle, the numbering here updates to match the shuffled order.
+          </div>
+          <table aria-label="Answer key table">
+            <thead>
+              <tr>
+                <th style="width:64px;">#</th>
+                <th>Prompt</th>
+                <th style="width:220px;">Category</th>
+              </tr>
+            </thead>
+            <tbody id="keyBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <div class="footer">
+      <div class="nav">
+        <button id="btnPrev" title="Previous prompt">◀ Prev</button>
+        <button id="btnNext" class="primary" title="Next prompt">Next ▶</button>
+      </div>
+
+      <div class="progress">
+        <span id="counterText">0 / 0</span>
+        <div class="bar" aria-hidden="true"><div class="fill" id="progressFill"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================
+    // PROMPTS (EDIT THESE FREELY)
+    // Answers are generic categories only, per your request.
+    // =========================================================
+    const CARDS = [
+      // Mechanoreceptors
+      { prompt: "Quadriceps lengthens too quickly", answer: "Mechanoreceptors" },
+      { prompt: "Blood pressure rises during heavy lifting", answer: "Mechanoreceptors" },
+      { prompt: "Vibration felt in the fingertips", answer: "Mechanoreceptors" },
+      { prompt: "Stomach wall distends after a large meal", answer: "Mechanoreceptors" },
+      { prompt: "Increased shear stress along a blood vessel wall", answer: "Mechanoreceptors" },
+      { prompt: "Hair cells in the inner ear bend due to fluid movement", answer: "Mechanoreceptors" },
+
+      // Thermoreceptors
+      { prompt: "Skin temperature drops rapidly", answer: "Thermoreceptors" },
+      { prompt: "Core temperature rises during a fever", answer: "Thermoreceptors" },
+
+      // Nociceptors (pain)
+      { prompt: "Hand touches a hot stove (extreme temperature)", answer: "Nociceptors" },
+      { prompt: "Exposure to extreme cold causes pain", answer: "Nociceptors" },
+      { prompt: "Capsaicin from chili peppers causes burning sensation", answer: "Nociceptors" },
+      { prompt: "Excessive pressure damages skin tissue", answer: "Nociceptors" },
+
+      // Chemoreceptors
+      { prompt: "CO₂ increases during intense exercise", answer: "Chemoreceptors" },
+      { prompt: "Blood pH drops (more acidic) during hypoventilation", answer: "Chemoreceptors" },
+      { prompt: "Blood glucose increases after a meal", answer: "Chemoreceptors" },
+      { prompt: "Plasma osmolarity increases after sweating", answer: "Chemoreceptors" },
+      { prompt: "Na⁺ concentration changes in extracellular fluid", answer: "Chemoreceptors" },
+      { prompt: "Taste receptors respond to food chemicals", answer: "Chemoreceptors" },
+      { prompt: "Olfactory receptors detect volatile chemicals", answer: "Chemoreceptors" },
+
+      // Photoreceptors
+      { prompt: "Bright light enters the eye", answer: "Photoreceptors" },
+      { prompt: "A colored object is seen (wavelength differences)", answer: "Photoreceptors" },
+
+      // Immune sensors
+      { prompt: "Immune cells detect pathogen-associated molecular patterns (PAMPs)", answer: "Immune sensors" },
+      { prompt: "Cells detect damage-associated molecular patterns (DAMPs) after tissue injury", answer: "Immune sensors" },
+
+      // Intracellular sensors
+      { prompt: "ATP levels fall and AMP rises inside a cell", answer: "Intracellular sensors" },
+      { prompt: "Intracellular Ca²⁺ increases during signaling", answer: "Intracellular sensors" },
+      { prompt: "Cellular O₂ availability drops (hypoxia)", answer: "Intracellular sensors" },
+      { prompt: "Oxidative stress increases inside a cell", answer: "Intracellular sensors" }
+    ];
+
+    // =========================================================
+    // STATE
+    // =========================================================
+    let deck = [];
+    let idx = 0;
+    let onKeySlide = false;
+
+    // Timer (5:00)
+    let timerInterval = null;
+    let timerRemaining = 5 * 60; // seconds
+    let timerRunning = false;
+
+    // =========================================================
+    // HELPERS
+    // =========================================================
+    const el = (id) => document.getElementById(id);
+    const pad2 = (n) => String(n).padStart(2, "0");
+
+    function shuffleInPlace(arr){
+      for(let i = arr.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function setModePrompts(){
+      onKeySlide = false;
+      el("modeLabel").textContent = "Mode: Prompts";
+      el("promptCard").style.display = "flex";
+      el("keyCard").style.display = "none";
+      renderPrompt();
+    }
+
+    function setModeKey(){
+      onKeySlide = true;
+      el("modeLabel").textContent = "Mode: Answer Key";
+      el("promptCard").style.display = "none";
+      el("keyCard").style.display = "flex";
+      renderKey();
+    }
+
+    function renderPrompt(){
+      const total = deck.length;
+      if(total === 0){
+        el("promptText").textContent = "No cards found.";
+        el("counterText").textContent = "0 / 0";
+        el("progressFill").style.width = "0%";
+        return;
+      }
+      idx = Math.max(0, Math.min(idx, total - 1));
+      el("promptText").textContent = deck[idx].prompt;
+      el("counterText").textContent = `${idx + 1} / ${total}`;
+      el("progressFill").style.width = `${((idx + 1) / total) * 100}%`;
+    }
+
+    function renderKey(){
+      const tbody = el("keyBody");
+      tbody.innerHTML = "";
+      deck.forEach((c, i) => {
+        const tr = document.createElement("tr");
+
+        const tdNum = document.createElement("td");
+        tdNum.textContent = String(i + 1);
+
+        const tdPrompt = document.createElement("td");
+        tdPrompt.textContent = c.prompt;
+
+        const tdAns = document.createElement("td");
+        const span = document.createElement("span");
+        span.className = "tag";
+        span.textContent = c.answer;
+        tdAns.appendChild(span);
+
+        tr.appendChild(tdNum);
+        tr.appendChild(tdPrompt);
+        tr.appendChild(tdAns);
+
+        tbody.appendChild(tr);
+      });
+      el("keyWrap").classList.add("show");
+    }
+
+    function goNext(){
+      if(onKeySlide) return;
+      idx = (idx + 1) % deck.length;
+      renderPrompt();
+    }
+
+    function goPrev(){
+      if(onKeySlide) return;
+      idx = (idx - 1 + deck.length) % deck.length;
+      renderPrompt();
+    }
+
+    // =========================================================
+    // TIMER (5:00)
+    // =========================================================
+    function updateTimerUI(){
+      const mm = Math.floor(timerRemaining / 60);
+      const ss = timerRemaining % 60;
+      el("timerText").textContent = `${pad2(mm)}:${pad2(ss)}`;
+      el("timerPill").style.display = "inline-flex";
+    }
+
+    function stopTimer(){
+      timerRunning = false;
+      if(timerInterval) clearInterval(timerInterval);
+      timerInterval = null;
+      el("btnTimer").textContent = "5:00 Timer";
+      timerRemaining = 5 * 60;
+      el("timerPill").style.display = "none";
+    }
+
+    function startTimer(){
+      timerRunning = true;
+      timerRemaining = 5 * 60;
+      updateTimerUI();
+      el("btnTimer").textContent = "Stop Timer";
+      timerInterval = setInterval(() => {
+        timerRemaining -= 1;
+        if(timerRemaining <= 0){
+          timerRemaining = 0;
+          updateTimerUI();
+          clearInterval(timerInterval);
+          timerInterval = null;
+          timerRunning = false;
+          el("btnTimer").textContent = "5:00 Timer";
+          // Gentle alert
+          el("timerPill").style.borderColor = "rgba(40,224,139,.45)";
+          setTimeout(()=> el("timerPill").style.borderColor = "var(--border)", 1800);
+        }else{
+          updateTimerUI();
+        }
+      }, 1000);
+    }
+
+    // =========================================================
+    // "Blank Answer Slide" (still no key)
+    // =========================================================
+    let blankMode = false;
+    function toggleBlankSlide(){
+      blankMode = !blankMode;
+      if(blankMode){
+        el("cardLabel").textContent = "Blank Answer Slide";
+        el("promptText").textContent = "Write your group’s answer (generic category) on your whiteboard / paper.";
+        el("btnRevealBlank").textContent = "Back to Prompts";
+      }else{
+        el("cardLabel").textContent = "Prompt";
+        el("btnRevealBlank").textContent = "Blank Answer Slide";
+        renderPrompt();
+      }
+    }
+
+    // =========================================================
+    // INIT / EVENTS
+    // =========================================================
+    function init(){
+      deck = CARDS.map((c) => ({...c}));
+      idx = 0;
+      blankMode = false;
+      el("cardLabel").textContent = "Prompt";
+      setModePrompts();
+    }
+
+    el("btnShuffle").addEventListener("click", () => {
+      deck = shuffleInPlace(deck);
+      idx = 0;
+      blankMode = false;
+      el("cardLabel").textContent = "Prompt";
+      if(onKeySlide){
+        renderKey();
+      }else{
+        renderPrompt();
+      }
+    });
+
+    el("btnRestart").addEventListener("click", () => {
+      idx = 0;
+      blankMode = false;
+      el("cardLabel").textContent = "Prompt";
+      if(onKeySlide) setModePrompts();
+      else renderPrompt();
+    });
+
+    el("btnKey").addEventListener("click", () => {
+      // Go to key slide. Timer keeps state (in case you want it running).
+      blankMode = false;
+      el("cardLabel").textContent = "Prompt";
+      setModeKey();
+    });
+
+    el("btnNext").addEventListener("click", goNext);
+    el("btnPrev").addEventListener("click", goPrev);
+
+    el("btnTimer").addEventListener("click", () => {
+      if(timerRunning) stopTimer();
+      else startTimer();
+    });
+
+    el("btnRevealBlank").addEventListener("click", () => {
+      if(onKeySlide) return;
+      toggleBlankSlide();
+    });
+
+    // Keyboard shortcuts
+    window.addEventListener("keydown", (e) => {
+      if(e.key === "ArrowRight") goNext();
+      if(e.key === "ArrowLeft") goPrev();
+      if(e.key.toLowerCase() === "k") setModeKey();
+      if(e.key.toLowerCase() === "p") setModePrompts();
+      if(e.key.toLowerCase() === "s") {
+        deck = shuffleInPlace(deck); idx = 0;
+        if(onKeySlide) renderKey(); else renderPrompt();
+      }
+      if(e.key === "Escape" && onKeySlide) setModePrompts();
+    });
+
+    // Clicking anywhere on the prompt card advances (optional, but handy when presenting)
+    el("promptCard").addEventListener("click", (e) => {
+      // Don't advance if the user clicked a button inside the card
+      if(e.target.tagName.toLowerCase() === "button") return;
+      if(onKeySlide) return;
+      if(blankMode) return;
+      goNext();
+    });
+
+    // From key slide, click to return to prompts
+    el("keyCard").addEventListener("click", (e) => {
+      if(e.target.tagName.toLowerCase() === "button") return;
+      setModePrompts();
+    });
+
+    init();
+  </script>
+</body>
+</html>
